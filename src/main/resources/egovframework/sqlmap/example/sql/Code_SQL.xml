@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.example.code.service.impl.CodeMapper">
+   
+    <!-- 6. 코드그룹 list sql xml 만들기 -->
+	<select id="getCodeList" parameterType="codeVO" resultType="egovMap">
+		SELECT GROUP_ID  
+		     , GROUP_NM
+		     , CD_NOTE
+		     , CD_REG_DT
+		     , CD_UPDATE_DT
+		     , CD_REG_NM
+		     , CD_UPDATE_NM
+		  FROM CD_GROUP
+		 WHERE 1=1
+		 <if test="searchId == 'groupId'">
+	  	     <if test="idKeyword != null and idKeyword != '' ">
+			  	AND GROUP_ID LIKE '%' || #{idKeyword, jdbcType=VARCHAR} || '%'
+			 </if>
+	  	 </if>
+	  	 <if test="searchNm == 'groupNm'">
+	  	     <if test="nameKeyword != null and nameKeyword != '' ">
+			  	AND GROUP_NM LIKE '%' || #{nameKeyword, jdbcType=VARCHAR} || '%'
+			 </if>
+	  	 </if>
+		
+	</select>
+	
+	<!-- 11. 코드그룹 상세팝업  sql xml 만들기 -->
+	<select id="getCodeView" parameterType="CodeVO" resultType="egovMap">
+		SELECT GROUP_ID  
+		     , GROUP_NM
+		     , CD_NOTE
+		     , CD_REG_DT
+		     , CD_UPDATE_DT
+		     , CD_REG_NM
+		     , CD_UPDATE_NM
+		  FROM CD_GROUP
+		 WHERE GROUP_ID = #{groupId, jdbcType=VARCHAR}
+	</select> 
+	
+	<!-- 19. 코드그룹 저장팝업  sql xml 만들기 -->
+	<insert id="codeAdd" parameterType="CodeVO">
+	    INSERT INTO CD_GROUP (
+		       GROUP_ID
+		     , GROUP_NM
+		     , CD_NOTE
+		     , CD_REG_DT
+		     , CD_UPDATE_DT
+		     , CD_REG_NM
+		     , CD_UPDATE_NM
+		) VALUES (
+		       #{groupId,    jdbcType=VARCHAR}
+		     , #{groupNm,    jdbcType=VARCHAR}
+		     , #{cdNote,     jdbcType=VARCHAR}
+		     , SYSDATE
+		     , SYSDATE
+		     , #{cdRegNm,    jdbcType=VARCHAR}
+		     , #{cdUpdateNm, jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<!-- 코드그룹  수정  sql xml 만들기 -->
+	<update id="codeModify" parameterType="CodeVO">
+		UPDATE CD_GROUP
+		   SET GROUP_NM     = #{groupNm,     jdbcType=VARCHAR}
+		     , CD_NOTE   	= #{cdNote,      jdbcType=VARCHAR}
+		     , CD_REG_DT	= #{cdRegDt,     jdbcType=VARCHAR}
+		     , CD_UPDATE_DT = #{cdUpdateDt,  jdbcType=VARCHAR}
+		     , CD_REG_NM 	= #{cdRegNm,     jdbcType=VARCHAR}
+		     , CD_UPDATE_NM = #{cdUpdateNm,  jdbcType=VARCHAR}
+		 WHERE GROUP_ID		= #{groupId,     jdbcType=VARCHAR}
+	</update>
+	
+	<!-- 코드그룹 삭제  sql xml 만들기 -->
+	<delete id ="codeDelete" parameterType="CodeVO">
+		DELETE 
+		  FROM CD_GROUP
+		 WHERE GROUP_ID = #{groupId, jdbcType=VARCHAR}
+	</delete>
+	
+	<!-- 합계 -->
+	<!-- <select id="countCdDtl" parameterType="CodeVO" resultType="egovMap">
+		SELECT COUNT(GROUP_ID)
+		  FROM CD_DTL
+		 WHERE GROUP_ID = #{groupId,     jdbcType=VARCHAR}
+	</select> -->
+	
+	
+	
+	<!-- 상세코드 목록 (ajax) -->
+	<select id="getCodeDtlList" parameterType="codeVO" resultType="egovMap">
+		SELECT CD_ID
+		     , CD_NM
+		     , GROUP_ID
+		     , NVL(DTL_NOTE, '') AS DTL_NOTE 
+		  FROM CD_DTL
+		 WHERE GROUP_ID = #{groupId, jdbcType=VARCHAR}
+		 <if test="searchUseYn != null and searchUseYn != ''">
+		   AND USE_YN = #{searchUseYn, jdbcType=VARCHAR}
+		 </if>
+		 <if test="searchId == 'cdId'">
+	  	     <if test="idKeyword != null and idKeyword != '' ">
+			  	AND CD_ID LIKE '%' || #{idKeyword, jdbcType=VARCHAR} || '%'
+			 </if>
+	  	 </if>
+	  	 <if test="searchNm == 'cdNm'">
+	  	     <if test="nameKeyword != null and nameKeyword != '' ">
+			  	AND CD_NM LIKE '%' || #{nameKeyword, jdbcType=VARCHAR} || '%'
+			 </if>
+	  	 </if>
+	</select>
+	
+	<!-- 상세코드 상세팝업  sql xml 만들기 -->
+	<select id="getCodeDtlView" parameterType="CodeVO" resultType="egovMap">
+		   SELECT GROUP_ID
+			    , CD_ID
+			    , CD_NM
+			    , REFERENCE_1
+			    , REFERENCE_2
+			    , USE_YN
+			    , DTL_NOTE
+		        , DTL_REG_DT
+		        , DTL_REG_NM
+		        , DTL_UPDATE_DT
+			    , DTL_UPDATE_NM
+			  FROM CD_DTL
+			 WHERE GROUP_ID = #{groupId, jdbcType=VARCHAR}
+			   AND CD_ID = #{cdId, jdbcType=VARCHAR}
+	</select>
+	
+	<!-- 상세코드 수정  sql xml 만들기 -->
+	<update id="codeDtlModify" parameterType="CodeVO">
+		UPDATE CD_DTL
+		   SET CD_NM         = #{cdNm, jdbcType=VARCHAR}
+		     , REFERENCE_1   = #{reference1, jdbcType=VARCHAR}
+		     , REFERENCE_2 	 = #{reference2, jdbcType=VARCHAR}
+		     , USE_YN      	 = #{useYn, jdbcType=VARCHAR}
+		     , DTL_NOTE      = #{dtlNote, jdbcType=VARCHAR}
+		     , DTL_REG_DT 	 = #{dtlRegDt, jdbcType=VARCHAR}
+		     , DTL_REG_NM    = #{dtlRegNm, jdbcType=VARCHAR}
+		     , DTL_UPDATE_DT = #{dtlUpdateDt, jdbcType=VARCHAR}
+		     , DTL_UPDATE_NM = #{dtlUpdateNm, jdbcType=VARCHAR}
+		 WHERE GROUP_ID      = #{groupId, jdbcType=VARCHAR}
+		   AND CD_ID         = #{cdId, jdbcType=VARCHAR}
+	</update>
+	    
+	<!-- 상세코드 저장팝업  sql xml 만들기 -->
+	<insert id="codeDtlAdd" parameterType="CodeVO">
+	   INSERT INTO CD_DTL (
+	   		   GROUP_ID
+		     , CD_ID
+		     , CD_NM
+		     , REFERENCE_1
+		     , REFERENCE_2
+		     , USE_YN
+		     , DTL_NOTE
+		     , DTL_REG_DT
+		     , DTL_REG_NM
+		     , DTL_UPDATE_DT
+		     , DTL_UPDATE_NM
+		) VALUES (
+		  	   #{groupId,       jdbcType=VARCHAR}
+		     , #{cdId,      	jdbcType=VARCHAR}
+		     , #{cdNm,    		jdbcType=VARCHAR}
+		     , #{reference1,    jdbcType=VARCHAR}
+		     , #{reference2,    jdbcType=VARCHAR}
+		     , #{useYn,   		jdbcType=VARCHAR}
+		     , #{dtlNote,    	jdbcType=VARCHAR}
+		     , SYSDATE
+		     , #{dtlRegNm,    	jdbcType=VARCHAR}
+		     , SYSDATE
+		     , #{dtlUpdateNm,   jdbcType=VARCHAR}
+		) 
+	</insert>
+	
+	<!-- 상세코드 삭제  sql xml 만들기 -->
+	<delete id ="codeDtlDelete" parameterType="CodeVO">
+		DELETE 
+		  FROM CD_DTL
+		 WHERE CD_ID    = #{cdId, jdbcType=VARCHAR}
+	</delete>
+	
+	
+	
+</mapper>
+
+
+

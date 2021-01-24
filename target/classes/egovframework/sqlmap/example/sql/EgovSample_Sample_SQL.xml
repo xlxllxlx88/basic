@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.example.sample.service.impl.SampleMapper">
+    
+	<!-- 사원 리스트 
+	<select id="selectSampleList" parameterType="SampleVO" resultType="egovMap">
+		
+	    SELECT T2.*
+	      FROM (
+	      	SELECT T1.*
+		      FROM (
+		      	SELECT ROW_NUMBER() OVER (ORDER BY MEMBERNO DESC) AS RNUM
+			         , MEMBERNO								/*사원번호*/
+			         , KNAME								/*한글이름*/
+			     	 , MYNUMBER1							/*주민번호앞자리*/
+			     	 , MYNUMBER2							/*주민번호뒷자리*/
+			     	 , GENDER								/*성별*/
+			     	 , CASE WHEN GENDER = '1' THEN '남자'	/*성별한글표기*/
+			     	 		ELSE '여자'
+			     	 	END AS GENDER_NM
+			     	 , STAT									/*기술등급*/
+			      	 , LIST_STAT							/*상태*/
+			     	 , WORK_YN								/*근무여부*/	
+			     	 , CASE WHEN WORK_YN = 'N' THEN '퇴사'	/*근무여부한글표기*/
+			     	 	 	ELSE '근무'
+			        	END AS WORK_YN_NM
+			  	 FROM EMP
+			  	WHERE 1=1
+			  	searchCondition이 'kname'일 때 searchKeyword가 null이거나 값이 없지 않다면 like문 실행
+			  	 <if test="searchCondition == 'kname'">
+			  	     <if test="searchKeyword != null and searchKeyword !='' ">
+					  	AND KNAME LIKE '%' || #{searchKeyword,jdbcType=VARCHAR} || '%'
+					 </if>
+			  	 </if>
+			  	 searchCondition이 'kname'일 때 searchKeyword가 null이거나 값이 없지 않다면 like문 실행
+			  	 <if test="searchCondition == 'stat'">
+			  	     <if test="searchKeyword != null and searchKeyword != '' ">
+					  	AND STAT LIKE '%' || #{searchKeyword,jdbcType=VARCHAR} || '%'
+					 </if>
+			  	 </if>
+		      ) T1
+	      ) T2
+	    WHERE T2.RNUM BETWEEN((#{pageIndex} - 1) * #{recordCountPerPage}) + 1 AND (#{pageIndex} * #{recordCountPerPage})
+	      
+    </select>
+    -->
+    
+	<!-- 사원 리스트 수
+	<select id="selectSampleListCnt" parameterType="SampleVO" resultType="Integer">
+		SELECT COUNT(*) AS CNT
+	  	  FROM EMP
+	  	 WHERE 1=1
+	  	  검색 보내주는 searchCondition=' + searchCondition + '&searchKeyword=' + searchKeyword 
+	  	 <if test="searchCondition == 'kname'">
+	  	     <if test="searchKeyword != null and searchKeyword !='' ">
+			  	AND KNAME LIKE '%' || #{searchKeyword,jdbcType=VARCHAR} || '%'
+			 </if>
+	  	 </if>
+	  	 <if test="searchCondition == 'stat'">
+	  	     <if test="searchKeyword != null and searchKeyword != '' ">
+			  	AND STAT LIKE '%' || #{searchKeyword,jdbcType=VARCHAR} || '%'
+			 </if>
+	  	  </if>
+	</select>   
+	 -->
+	
+	<!-- 사원 상세정보
+	<select id="selectSampleView" parameterType="SampleVO" resultType="SampleVO">
+	    SELECT MEMBERNO 			/*사원번호*/
+		     , KNAME				/*한글이름*/
+		     , ENAME				/*영문이름*/
+		     , JNAME				/*한문이름*/
+		     , MYNUMBER1			/*주민번호앞자리*/
+		     , MYNUMBER2			/*주민번호뒷자리*/
+		     , ORIGINALFILENAME		/**/
+		     , PRESHORTFILENAME		/**/
+		     , YEAR					/*생년월일년*/
+		     , MONTH				/*생년월일월*/
+		     , DAY					/*생년월일일*/
+		     , CALENDAR				/*양력(1), 음력(2) 선택*/
+		     , GENDER				/*남자(1),여자(2)*/
+		     , WEDDING				/*기혼(1), 미혼(2)*/
+		     , CAREER				/*년차*/
+		     , MONEYTYPE			/*급여 지급유형*/
+		     , WORKINGTYPE			/*희망직무*/
+		     , WELCOME				/*입사유형*/
+		     , ADDRESS				/*우편번호*/
+		     , DETAILADDRESS		/*상세주소*/
+		     , PHONENUMBER1			/*연락처앞자리*/
+		     , PHONENUMBER2			/*연락처가운데자리*/
+		     , PHONENUMBER3			/*연락처뒷자리*/
+		     , EMAIL				/*이메일*/
+		     , STAT					/*기술등급*/
+		     , ALCHOL				/*주량*/
+		     , LIST_STAT			/*리스트상태*/
+		     , WORK_YN				/*근무정보*/
+		     , ORIGINALFILENAME AS FILENAME		/*파일명*/
+		     , PRESHORTFILENAME	AS FILEPATH	/*파일경로*/
+		  FROM EMP
+		 WHERE MEMBERNO = #{memberno,jdbcType=INTEGER}
+	</select>
+	
+	<insert id="selectSampleAdd" parameterType="SampleVO">
+	    INSERT INTO EMP (
+		       MEMBERNO
+		     , KNAME
+		     , ENAME
+		     , JNAME
+		     , MYNUMBER1
+		     , MYNUMBER2
+		     , YEAR
+		     , MONTH
+		     , DAY
+		     , CALENDAR
+		     , GENDER
+		     , WEDDING
+		     , CAREER
+		     , MONEYTYPE
+		     , WORKINGTYPE
+		     , WELCOME
+		     , ADDRESS
+		     , DETAILADDRESS
+		     , PHONENUMBER1
+		     , PHONENUMBER2
+		     , PHONENUMBER3
+		     , EMAIL
+		     , STAT
+		     , ALCHOL
+		     , ORIGINALFILENAME		/*파일명*/
+		     , PRESHORTFILENAME		/*파일경로*/
+		    ) VALUES (
+		       EMP_SEQ.NEXTVAL
+		     , #{kname,jdbcType=VARCHAR}
+		     , #{ename,jdbcType=VARCHAR}
+		     , #{jname,jdbcType=VARCHAR}
+		     , #{mynumber1,jdbcType=VARCHAR}
+		     , #{mynumber2,jdbcType=VARCHAR}
+		     , #{year,jdbcType=VARCHAR}
+		     , #{month,jdbcType=VARCHAR}
+		     , #{day,jdbcType=VARCHAR}
+		     , #{calendar,jdbcType=VARCHAR}
+		     , #{gender,jdbcType=VARCHAR}
+		     , #{wedding,jdbcType=VARCHAR}
+		     , #{career,jdbcType=VARCHAR}
+		     , #{moneyType,jdbcType=VARCHAR}
+		     , #{workingType,jdbcType=VARCHAR}
+		     , #{welcome,jdbcType=VARCHAR}
+		     , #{address,jdbcType=VARCHAR}
+		     , #{detailAddress,jdbcType=VARCHAR}
+		     , #{phoneNumber1,jdbcType=VARCHAR}
+		     , #{phoneNumber2,jdbcType=VARCHAR}
+		     , #{phoneNumber3,jdbcType=VARCHAR}
+		     , #{email,jdbcType=VARCHAR}
+		     , #{stat,jdbcType=VARCHAR}
+		     , #{alchol,jdbcType=VARCHAR}
+		     , #{filename,jdbcType=VARCHAR}
+		     , #{filepath,jdbcType=VARCHAR}
+		   )
+	</insert>
+	
+	<update id="updateSample" parameterType="SampleVO">
+		UPDATE EMP
+		   SET KNAME = #{kname,jdbcType=VARCHAR}
+		     , ENAME = #{ename,jdbcType=VARCHAR}
+		     , JNAME = #{jname,jdbcType=VARCHAR}
+		     , MYNUMBER1 = #{mynumber1,jdbcType=VARCHAR}
+		     , MYNUMBER2 = #{mynumber2,jdbcType=VARCHAR}
+		     , YEAR = #{year,jdbcType=VARCHAR}
+		     , MONTH = #{month,jdbcType=VARCHAR}
+		     , DAY = #{day,jdbcType=VARCHAR}
+		     , CALENDAR = #{calendar,jdbcType=VARCHAR}
+		     , GENDER = #{gender,jdbcType=VARCHAR}
+		     , WEDDING = #{wedding,jdbcType=VARCHAR}
+		     , CAREER = #{career,jdbcType=VARCHAR}
+		     , MONEYTYPE = #{moneyType,jdbcType=VARCHAR}
+		     , WORKINGTYPE = #{workingType,jdbcType=VARCHAR}
+		     , WELCOME = #{welcome,jdbcType=VARCHAR}
+		     , ADDRESS = #{address,jdbcType=VARCHAR}
+		     , DETAILADDRESS = #{detailAddress,jdbcType=VARCHAR}
+		     , PHONENUMBER1 = #{phoneNumber1,jdbcType=VARCHAR}
+		     , PHONENUMBER2 = #{phoneNumber2,jdbcType=VARCHAR}
+		     , PHONENUMBER3 = #{phoneNumber3,jdbcType=VARCHAR}
+		     , EMAIL = #{email,jdbcType=VARCHAR}
+		     , STAT = #{stat,jdbcType=VARCHAR}
+		     , ALCHOL = #{alchol,jdbcType=VARCHAR}
+		     , ORIGINALFILENAME = #{filename,jdbcType=VARCHAR}
+		     , PRESHORTFILENAME = #{filepath,jdbcType=VARCHAR}
+		 WHERE 1 = 1
+    	   AND MEMBERNO = #{memberno,jdbcType=INTEGER}
+	</update>
+	
+	<delete id ="deleteSample" parameterType="SampleVO">
+		DELETE 
+		  FROM EMP
+		 WHERE MEMBERNO = #{memberno,jdbcType=INTEGER}
+	</delete>
+	 -->
+<!-- 
+	<select id="selectSampleList" parameterType="sampleVO" resultType="egovMap">
+		SELECT X.*
+		     , (TOT_CNT - RUNM + 1) AS NO  
+		FROM (
+			SELECT NAME
+			     , AGE
+			     , INFO
+			     , BDAY
+			     , TO_CHAR(JOIN_DATE,'YYYYMMDD') AS JOIN_DATE
+			     , CASE GENDER WHEN '1' THEN '남' WHEN '2' THEN '여' END AS GENDER
+			     , M_NO
+			     , ROW_NUMBER() OVER(ORDER BY T1.JOIN_DATE DESC, T1.M_NO DESC) AS RUNM
+			     , NVL(#{totalRecordCount},0) AS TOT_CNT 
+			  FROM egov.MEMBER T1
+			 WHERE 1 = 1
+				<if test='search_name != null and search_name != " " '>
+					AND T1.NAME LIKE '%'||#{search_name,jdbcType=VARCHAR}||'%'
+				</if>
+			  )X
+			WHERE X.RUNM BETWEEN((#{pageIndex} - 1) *(#{recordCountPerPage} + 1)) AND (#{pageIndex} * #{recordCountPerPage}) 
+	</select>
+	 -->
+	<!-- <insert id="insertSample" parameterType="SampleVO">
+	
+		<selectKey keyProperty="mNo" resultType="int" order="BEFORE">
+			SELECT NVL(MAX(M_NO),0) + 1
+			  FROM egov.MEMBER
+		</selectKey>
+		 
+		INSERT INTO MEMBER(
+			    NAME
+		      , AGE
+		      , INFO
+		      , BDAY
+			  , GENDER
+			  , JOIN_DATE
+			  , M_NO
+		)VALUES(
+			   #{name,jdbcType=VARCHAR}
+			  ,#{age,jdbcType=VARCHAR}
+			  ,#{info,jdbcType=VARCHAR}
+			  ,#{bday,jdbcType=VARCHAR}
+			  ,#{gender,jdbcType=VARCHAR}
+			  , SYSDATE
+			  ,#{mNo,jdbcType=INTEGER}
+		)
+		
+	</insert>
+	
+	<select id="selectSampleNo" parameterType="SampleVO" resultType="SampleVO">
+		SELECT  NAME
+		      , AGE
+		      , INFO
+		      , BDAY
+		      , TO_CHAR(JOIN_DATE,'YYYYMMDD') AS JOINDATE
+		      , CASE GENDER WHEN '1' THEN '남' WHEN '2' THEN '여' END AS GENDER
+		      , M_NO AS NO
+		  FROM egov.MEMBER
+		  WHERE M_NO = #{mNo}
+	</select>
+	
+	<update id="updateSample" parameterType="SampleVO">
+		UPDATE egov.MEMBER 
+			SET 
+			<trim prefixOverrides=",">
+				<if test = 'name != null and name != ""'>
+				,	NAME = #{name,jdbcType=VARCHAR}
+				</if>
+				<if test = 'age != null and age != ""'>
+				,	AGE = #{age,jdbcType=VARCHAR}
+				</if>
+				<if test = 'info != null and info != ""'>
+				,	INFO = #{info,jdbcType=VARCHAR}
+				</if>
+				<if test = 'bday != null and bday != ""'>
+				,	BDAY = #{bday,jdbcType=VARCHAR}
+				</if>
+				<if test = 'gender != null and gender != ""'>
+				,	GENDER = #{gender,jdbcType=VARCHAR}
+				</if>
+			</trim>
+			 
+			 WHERE 1 = 1
+			 AND M_NO = #{mNo,jdbcType=INTEGER}
+	
+	</update>
+	
+	<delete id ="deletetSample" parameterType="int">
+		DELETE FROM egov.MEMBER 
+		WHERE M_NO = #{mNo}
+	</delete> -->
+</mapper>

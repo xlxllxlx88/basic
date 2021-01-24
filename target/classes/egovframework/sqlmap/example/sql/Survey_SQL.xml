@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.example.survey.service.impl.SurveyMapper">
+   
+    <!-- 6. 설문조사 list sql xml 만들기 -->
+	<select id="getServeyList" parameterType="surveyVO" resultType="egovMap">
+		SELECT SURVEY_NO
+		     , SURVEY_NM
+		     , TO_CHAR(TO_DATE(SURVEY_ST_DT, 'YYYYMMDD'),'YYYY-MM-DD') || ' ~ ' || TO_CHAR(TO_DATE(SURVEY_ED_DT, 'YYYYMMDD'),'YYYY-MM-DD') AS SED 
+		     , (SELECT COUNT(QST_NO) 
+		          FROM SURVEY_QST
+		          WHERE SURVEY_NO = SURVEY_NO
+		            AND USE_YN = 'Y') AS QQN               
+		     , (SELECT COUNT(RSP_NO) 
+		          FROM SURVEY_RSP
+		         WHERE SURVEY_NO = SURVEY_NO) AS RRN            
+		  FROM SURVEY_MST 
+		 WHERE 1=1
+		   AND SURVEY_NM LIKE '%' || #{surveyNm, jdbcType=VARCHAR} || '%'              
+		   AND SURVEY_ED_DT BETWEEN REPLACE('2020-03-05','-') AND REPLACE('2020-03-31','-') 
+		   <![CDATA[  AND SURVEY_ED_DT < TO_CHAR(SYSDATE, 'YYYYMMDD')  ]]> 
+		 ORDER BY SURVEY_NO
+	</select>
+	
+	<select id="getServeyDtl" parameterType="surveyVO" resultType="egovMap">
+		SELECT SURVEY_NO, QST_NO, EXP_NO, QST_SEQ, EXP_SEQ, CONT, QST_TYPE, GUBUN 
+		  FROM (
+		       SELECT SURVEY_NO
+		            , QST_NO
+		            , NULL AS EXP_NO
+		            , QST_SEQ
+		            , NULL AS EXP_SEQ
+		            , QST_CONT AS CONT
+		            , QST_TYPE
+		            , 'A_QST' AS GUBUN  
+		         FROM SURVEY_QST
+		        WHERE USE_YN = 'Y'
+		
+		        UNION ALL
+		
+		       SELECT A.SURVEY_NO
+		            , A.QST_NO
+		            , A.EXP_NO
+		            , B.QST_SEQ 
+		            , A.EXP_SEQ
+		            , A.EXP_CONT AS CONT
+		            , B.QST_TYPE 
+		            , 'B_EXP' AS GUBUN
+		         FROM SURVEY_EXP A
+		         LEFT OUTER JOIN SURVEY_QST B
+		           ON A.SURVEY_NO = B.SURVEY_NO
+		          AND A.QST_NO = B.QST_NO
+		        WHERE A.USE_YN = 'Y' 
+		          AND B.USE_YN = 'Y'
+		       ) T1
+		 ORDER BY QST_SEQ, GUBUN, EXP_SEQ
+	</select>
+	
+	
+	
+</mapper>
+
+
+
